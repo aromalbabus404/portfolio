@@ -22,7 +22,8 @@
   }
 
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  /* scroll-behavior: smooth removed — caused scroll lock fighting parallax handlers */
+  html { scroll-behavior: smooth; }
+  html.no-smooth { scroll-behavior: auto; }
 
   body {
     background: var(--bg);
@@ -1156,11 +1157,15 @@ function animateSentinel() {
 }
 animateSentinel();
 
-/* ── SMOOTH NAV SCROLL (replaces CSS scroll-behavior which caused lock) ── */
+/* ── SMOOTH NAV SCROLL ── */
 function smoothTo(id) {
   closeMenu();
   const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (!el) return;
+  // Temporarily disable CSS smooth scroll so scrollIntoView doesn't double-animate
+  document.documentElement.classList.add('no-smooth');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => document.documentElement.classList.remove('no-smooth'), 800);
 }
 
 /* ── MOBILE MENU ── */
@@ -1214,7 +1219,7 @@ document.addEventListener('mousemove', e => {
     document.querySelector('.orb-3').style.transform = `translate(${x * 0.2}px,${y * 0.2}px)`;
     orbRaf = false;
   });
-});
+}, { passive: true });
 
 /* ── NAV ACTIVE STATE — throttled with rAF ── */
 const allSections = document.querySelectorAll('section[id]');
