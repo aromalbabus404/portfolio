@@ -53,14 +53,26 @@
   body:has(a:hover) #cursor-ring,
   body:has(button:hover) #cursor-ring { width: 60px; height: 60px; border-color: var(--accent2); }
 
+  /* ── SENTINEL AI CANVAS BACKGROUND ── */
+  #sentinel-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: .45;
+    pointer-events: none;
+  }
+
   /* ── BACKGROUND GRID ── */
   .bg-grid {
-    position: fixed; inset: 0; z-index: 0;
+    position: fixed; inset: 0; z-index: 1;
     background-image:
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 60px 60px;
     animation: gridShift 20s linear infinite;
+    pointer-events: none;
   }
   @keyframes gridShift {
     0%   { background-position: 0 0; }
@@ -74,7 +86,7 @@
   }
 
   /* ── ORBS ── */
-  .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+  .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 1; }
   .orb-1 {
     width: 600px; height: 600px;
     background: radial-gradient(circle, rgba(0,255,224,.12) 0%, transparent 70%);
@@ -132,7 +144,7 @@
   .nav-links a:hover { color: var(--accent); }
   .nav-links a:hover::after { width: 100%; }
 
-  /* Mobile hamburger (hidden on desktop) */
+  /* Mobile hamburger */
   .menu-toggle {
     display: none; font-size: 28px; color: var(--accent);
     cursor: pointer; z-index: 1001; user-select: none;
@@ -141,7 +153,7 @@
   /* ── HERO ── */
   #hero {
     min-height: 100vh; display: flex; align-items: center;
-    padding: 120px 40px 80px; position: relative;
+    padding: 120px 40px 80px; position: relative; z-index: 2;
   }
   .hero-inner { max-width: 1200px; margin: 0 auto; width: 100%; }
 
@@ -224,7 +236,7 @@
   }
 
   /* ── SECTIONS ── */
-  section { padding: 120px 40px; position: relative; }
+  section { padding: 120px 40px; position: relative; z-index: 2; }
   .section-header { display: flex; align-items: center; gap: 20px; margin-bottom: 80px; }
   .section-num { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 3px; color: var(--accent); opacity: .6; }
   .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,5vw,72px); letter-spacing: 2px; line-height: 1; }
@@ -270,13 +282,10 @@
     transition: background .3s, border-color .3s;
     display: flex; flex-direction: column;
   }
-  /* Remove duplicate left borders in 2-col grid */
   .project-card:nth-child(2),
   .project-card:nth-child(4) { border-left: none; }
-  /* Remove duplicate top borders in 2-col grid */
   .project-card:nth-child(3),
   .project-card:nth-child(4) { border-top: none; }
-
   .project-card:hover { background: var(--glass-hover); border-color: rgba(0,255,224,.2); }
 
   .project-tag {
@@ -312,7 +321,6 @@
   }
   .project-card:hover .project-number { color: rgba(0,255,224,.07); }
 
-  /* View Project button inside card */
   .project-link {
     margin-top: auto;
     display: inline-flex; align-items: center; gap: 8px;
@@ -452,6 +460,7 @@
   .marquee-wrap {
     border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border);
     overflow: hidden; padding: 16px 0; background: rgba(0,255,224,.02);
+    position: relative; z-index: 2;
   }
   .marquee { display: flex; animation: marqueeScroll 20s linear infinite; width: max-content; }
   .marquee-item {
@@ -524,7 +533,7 @@
     .stat-row { flex-direction: column; }
     .stat-box { border-left: 1px solid var(--glass-border) !important; border-top: none; }
 
-    /* PROJECTS – single column, reset all borders then re-add top dividers */
+    /* PROJECTS */
     #projects .projects-grid { grid-template-columns: 1fr; }
     .project-card { padding: 28px 22px; border: 1px solid var(--glass-border) !important; }
     .project-card:not(:first-child) { border-top: none !important; }
@@ -578,6 +587,9 @@
 </style>
 </head>
 <body>
+
+<!-- CANVAS must be INSIDE body, not wrapping it -->
+<canvas id="sentinel-bg"></canvas>
 
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
@@ -699,11 +711,11 @@
       </div>
       <div class="about-right reveal reveal-delay-2">
         <div class="contact-chips">
-          <div class="chip"><span class="chip-icon">✉</span><a href="https://mail.google.com/mail/u/0/#inbox">aromalbabu9847@gmail.com</a></div>
+          <div class="chip"><span class="chip-icon">✉</span><a href="mailto:aromalbabu9847@gmail.com">aromalbabu9847@gmail.com</a></div>
           <div class="chip"><span class="chip-icon">☎</span> +91 7356462150</div>
           <div class="chip"><span class="chip-icon">📍</span> Alappuzha, Kerala, India</div>
-          <div class="chip"><span class="chip-icon">🔗</span><a href="https://www.linkedin.com/in/aromal-babu-241a7439b?utm_source=share_via&utm_content=profile&utm_medium=member_android">LinkedIn Profile</a></div>
-          <div class="chip"><span class="chip-icon">🐙</span><a href="https://github.com/aromalbabus404">GitHub Profile</a></div>
+          <div class="chip"><span class="chip-icon">🔗</span><a href="https://www.linkedin.com/in/aromal-babu-241a7439b" target="_blank">LinkedIn Profile</a></div>
+          <div class="chip"><span class="chip-icon">🐙</span><a href="https://github.com/aromalbabus404" target="_blank">GitHub Profile</a></div>
         </div>
       </div>
     </div>
@@ -1051,73 +1063,160 @@
     </div>
     <div class="footer-links">
       <a href="mailto:aromalbabu9847@gmail.com">Email</a>
-      <a href="#">LinkedIn</a>
-      <a href="#">GitHub</a>
+      <a href="https://www.linkedin.com/in/aromal-babu-241a7439b" target="_blank">LinkedIn</a>
+      <a href="https://github.com/aromalbabus404" target="_blank">GitHub</a>
     </div>
   </div>
 </footer>
 
 <script>
-  /* ── MOBILE MENU ── */
-  const menuToggle = document.getElementById('menu-toggle');
-  const navLinks   = document.getElementById('nav-links');
+/* ════════════════════════════════
+   SENTINEL AI BACKGROUND — canvas is now correctly inside body
+════════════════════════════════ */
+const canvas = document.getElementById("sentinel-bg");
+const ctx = canvas.getContext("2d");
 
-  function closeMenu() {
-    navLinks.classList.remove('active');
-    menuToggle.textContent = '☰';
+let w, h;
+let particles = [];
+const particleCount = 120;
+
+function resizeCanvas() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * w;
+    this.y = Math.random() * h;
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = (Math.random() - 0.5) * 0.5;
+    this.size = Math.random() * 2 + 1;
   }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < 0 || this.x > w) this.vx *= -1;
+    if (this.y < 0 || this.y > h) this.vy *= -1;
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0,255,224,0.8)";
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "#00ffe0";
+    ctx.fill();
+  }
+}
 
-  menuToggle.addEventListener('click', () => {
-    const open = navLinks.classList.toggle('active');
-    menuToggle.textContent = open ? '✕' : '☰';
+for (let i = 0; i < particleCount; i++) {
+  particles.push(new Particle());
+}
+
+let mouse = { x: null, y: null };
+window.addEventListener("mousemove", (e) => { mouse.x = e.x; mouse.y = e.y; });
+
+function connectParticles() {
+  for (let a = 0; a < particles.length; a++) {
+    for (let b = a; b < particles.length; b++) {
+      let dx = particles[a].x - particles[b].x;
+      let dy = particles[a].y - particles[b].y;
+      let distance = dx * dx + dy * dy;
+      if (distance < 12000) {
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(0,255,224,0.08)";
+        ctx.lineWidth = 1;
+        ctx.moveTo(particles[a].x, particles[a].y);
+        ctx.lineTo(particles[b].x, particles[b].y);
+        ctx.stroke();
+      }
+    }
+    if (mouse.x && mouse.y) {
+      let dx = particles[a].x - mouse.x;
+      let dy = particles[a].y - mouse.y;
+      let dist = dx * dx + dy * dy;
+      if (dist < 20000) {
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(255,60,172,0.15)";
+        ctx.moveTo(particles[a].x, particles[a].y);
+        ctx.lineTo(mouse.x, mouse.y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animateSentinel() {
+  ctx.clearRect(0, 0, w, h);
+  particles.forEach(p => { p.update(); p.draw(); });
+  connectParticles();
+  requestAnimationFrame(animateSentinel);
+}
+animateSentinel();
+
+/* ── MOBILE MENU ── */
+const menuToggle = document.getElementById('menu-toggle');
+const navLinks   = document.getElementById('nav-links');
+
+function closeMenu() {
+  navLinks.classList.remove('active');
+  menuToggle.textContent = '☰';
+}
+
+menuToggle.addEventListener('click', () => {
+  const open = navLinks.classList.toggle('active');
+  menuToggle.textContent = open ? '✕' : '☰';
+});
+
+/* ── CUSTOM CURSOR ── */
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+(function animateCursor() {
+  cursor.style.left = mx + 'px';
+  cursor.style.top  = my + 'px';
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animateCursor);
+})();
+
+/* ── SCROLL REVEAL ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.reveal, .skill-row').forEach(el => observer.observe(el));
+
+/* ── PARALLAX ORBS ── */
+document.addEventListener('mousemove', e => {
+  const x = (e.clientX / window.innerWidth  - 0.5) * 30;
+  const y = (e.clientY / window.innerHeight - 0.5) * 30;
+  document.querySelector('.orb-1').style.transform = `translate(${x * 0.5}px,${y * 0.5}px)`;
+  document.querySelector('.orb-2').style.transform = `translate(${-x * 0.3}px,${-y * 0.3}px)`;
+  document.querySelector('.orb-3').style.transform = `translate(${x * 0.2}px,${y * 0.2}px)`;
+});
+
+/* ── NAV ACTIVE STATE ── */
+const allSections = document.querySelectorAll('section[id]');
+const allNavLinks = document.querySelectorAll('.nav-links a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  allSections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
   });
-
-  /* ── CUSTOM CURSOR ── */
-  const cursor = document.getElementById('cursor');
-  const ring   = document.getElementById('cursor-ring');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-
-  (function animateCursor() {
-    cursor.style.left = mx + 'px';
-    cursor.style.top  = my + 'px';
-    rx += (mx - rx) * 0.12;
-    ry += (my - ry) * 0.12;
-    ring.style.left = rx + 'px';
-    ring.style.top  = ry + 'px';
-    requestAnimationFrame(animateCursor);
-  })();
-
-  /* ── SCROLL REVEAL ── */
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
-
-  document.querySelectorAll('.reveal, .skill-row').forEach(el => observer.observe(el));
-
-  /* ── PARALLAX ORBS ── */
-  document.addEventListener('mousemove', e => {
-    const x = (e.clientX / window.innerWidth  - 0.5) * 30;
-    const y = (e.clientY / window.innerHeight - 0.5) * 30;
-    document.querySelector('.orb-1').style.transform = `translate(${x * 0.5}px,${y * 0.5}px)`;
-    document.querySelector('.orb-2').style.transform = `translate(${-x * 0.3}px,${-y * 0.3}px)`;
-    document.querySelector('.orb-3').style.transform = `translate(${x * 0.2}px,${y * 0.2}px)`;
+  allNavLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
   });
-
-  /* ── NAV ACTIVE STATE ── */
-  const allSections = document.querySelectorAll('section[id]');
-  const allNavLinks = document.querySelectorAll('.nav-links a');
-
-  window.addEventListener('scroll', () => {
-    let current = '';
-    allSections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 100) current = s.id;
-    });
-    allNavLinks.forEach(a => {
-      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
-    });
-  });
+});
 </script>
+
 </body>
 </html>
