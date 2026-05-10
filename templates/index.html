@@ -22,7 +22,7 @@
   }
 
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  /* scroll-behavior: smooth removed — caused scroll lock fighting parallax handlers */
 
   body {
     background: var(--bg);
@@ -604,11 +604,11 @@
   <div class="nav-logo">AB</div>
   <div class="menu-toggle" id="menu-toggle">☰</div>
   <ul class="nav-links" id="nav-links">
-    <li><a href="#about"      onclick="closeMenu()">About</a></li>
-    <li><a href="#projects"   onclick="closeMenu()">Projects</a></li>
-    <li><a href="#skills"     onclick="closeMenu()">Skills</a></li>
-    <li><a href="#experience" onclick="closeMenu()">Experience</a></li>
-    <li><a href="#education"  onclick="closeMenu()">Education</a></li>
+    <li><a href="#about"      onclick="smoothTo('about');return false;">About</a></li>
+    <li><a href="#projects"   onclick="smoothTo('projects');return false;">Projects</a></li>
+    <li><a href="#skills"     onclick="smoothTo('skills');return false;">Skills</a></li>
+    <li><a href="#experience" onclick="smoothTo('experience');return false;">Experience</a></li>
+    <li><a href="#education"  onclick="smoothTo('education');return false;">Education</a></li>
   </ul>
 </nav>
 
@@ -1156,6 +1156,13 @@ function animateSentinel() {
 }
 animateSentinel();
 
+/* ── SMOOTH NAV SCROLL (replaces CSS scroll-behavior which caused lock) ── */
+function smoothTo(id) {
+  closeMenu();
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 /* ── MOBILE MENU ── */
 const menuToggle = document.getElementById('menu-toggle');
 const navLinks   = document.getElementById('nav-links');
@@ -1190,32 +1197,44 @@ document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; })
 /* ── SCROLL REVEAL ── */
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+}, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
 
 document.querySelectorAll('.reveal, .skill-row').forEach(el => observer.observe(el));
 
-/* ── PARALLAX ORBS ── */
+/* ── PARALLAX ORBS — throttled with rAF ── */
+let orbRaf = false;
 document.addEventListener('mousemove', e => {
-  const x = (e.clientX / window.innerWidth  - 0.5) * 30;
-  const y = (e.clientY / window.innerHeight - 0.5) * 30;
-  document.querySelector('.orb-1').style.transform = `translate(${x * 0.5}px,${y * 0.5}px)`;
-  document.querySelector('.orb-2').style.transform = `translate(${-x * 0.3}px,${-y * 0.3}px)`;
-  document.querySelector('.orb-3').style.transform = `translate(${x * 0.2}px,${y * 0.2}px)`;
+  if (orbRaf) return;
+  orbRaf = true;
+  requestAnimationFrame(() => {
+    const x = (e.clientX / window.innerWidth  - 0.5) * 30;
+    const y = (e.clientY / window.innerHeight - 0.5) * 30;
+    document.querySelector('.orb-1').style.transform = `translate(${x * 0.5}px,${y * 0.5}px)`;
+    document.querySelector('.orb-2').style.transform = `translate(${-x * 0.3}px,${-y * 0.3}px)`;
+    document.querySelector('.orb-3').style.transform = `translate(${x * 0.2}px,${y * 0.2}px)`;
+    orbRaf = false;
+  });
 });
 
-/* ── NAV ACTIVE STATE ── */
+/* ── NAV ACTIVE STATE — throttled with rAF ── */
 const allSections = document.querySelectorAll('section[id]');
 const allNavLinks = document.querySelectorAll('.nav-links a');
+let scrollRaf = false;
 
 window.addEventListener('scroll', () => {
-  let current = '';
-  allSections.forEach(s => {
-    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  if (scrollRaf) return;
+  scrollRaf = true;
+  requestAnimationFrame(() => {
+    let current = '';
+    allSections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    allNavLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
+    });
+    scrollRaf = false;
   });
-  allNavLinks.forEach(a => {
-    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
-  });
-});
+}, { passive: true });
 </script>
 
 </body>
