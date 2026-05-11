@@ -320,7 +320,18 @@ section{
   content:'';
   position:absolute;
   inset:0;
-  background:radial-gradient(circle at var(--x) var(--y),rgba(124,77,255,.25),transparent 40%);
+  background:radial-gradient(
+    circle at var(--x) var(--y),
+    rgba(124,77,255,.25),
+    transparent 40%
+  );
+  pointer-events:none;
+  z-index:1;
+}
+
+.project > *{
+  position:relative;
+  z-index:2;
 }
 
 .project h3{
